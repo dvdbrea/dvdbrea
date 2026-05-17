@@ -51,6 +51,7 @@
             transition: background 0.4s, color 0.4s;
         }
 
+        /* Header */
         header {
             position: sticky;
             top: 0;
@@ -108,12 +109,14 @@
             transform: translateY(-2px);
         }
 
+        /* Main Layout */
         main {
             max-width: 1100px;
             margin: 0 auto;
             padding: 0 2rem;
         }
 
+        /* Hero Section */
         .hero {
             padding: 4rem 0 3rem;
             text-align: center;
@@ -161,6 +164,7 @@
             font-weight: 300;
         }
 
+        /* Filters */
         .filters {
             display: flex;
             gap: 0.8rem;
@@ -195,6 +199,7 @@
             box-shadow: 0 4px 20px rgba(196, 92, 38, 0.3);
         }
 
+        /* Text Cards Grid */
         .texts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -225,12 +230,7 @@
             object-fit: cover;
             display: block;
             transition: transform 0.4s;
-            background: var(--surface);
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
+            background: var(--border);
         }
 
         .text-card:hover .card-image {
@@ -314,6 +314,7 @@
             gap: 0.8rem;
         }
 
+        /* Reading View */
         .reading-view {
             display: none;
             animation: fadeIn 0.5s ease;
@@ -365,6 +366,7 @@
             height: 400px;
             object-fit: cover;
             display: block;
+            background: var(--border);
         }
 
         .article-hero-overlay {
@@ -391,6 +393,7 @@
             display: flex;
             gap: 1rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .article-body-container {
@@ -449,6 +452,7 @@
             margin: 2.5rem 0;
             box-shadow: 0 8px 24px var(--shadow);
             display: block;
+            background: var(--border);
         }
 
         .article-image-caption {
@@ -460,33 +464,13 @@
             font-style: italic;
         }
 
-        .article-body a {
-            color: var(--accent);
-            text-decoration: none;
-            border-bottom: 2px solid var(--accent-light);
-            transition: all 0.3s;
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
         }
 
-        .article-body a:hover {
-            border-bottom-color: var(--accent);
-        }
-
-        .article-body ul, .article-body ol {
-            margin: 1.5rem 0 1.5rem 2rem;
-        }
-
-        .article-body li {
-            margin-bottom: 0.8rem;
-        }
-
-        .article-body code {
-            background: var(--card-bg);
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-        }
-
+        /* Footer */
         footer {
             background: var(--surface);
             border-top: 1px solid var(--border);
@@ -512,21 +496,7 @@
             font-size: 0.9rem;
         }
 
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-        }
-
-        .error {
-            background: var(--card-bg);
-            border-left: 4px solid var(--accent);
-            padding: 1.5rem 2rem;
-            margin: 2rem 0;
-            border-radius: 0 12px 12px 0;
-            color: var(--text);
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.2rem;
@@ -554,6 +524,7 @@
             }
         }
 
+        /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -583,6 +554,7 @@
     </header>
 
     <main>
+        <!-- Vista de Lista -->
         <div id="listView">
             <section class="hero">
                 <h1>Textos</h1>
@@ -601,6 +573,7 @@
             </div>
         </div>
 
+        <!-- Vista de Lectura -->
         <div class="reading-view" id="readingView">
             <button class="back-btn" onclick="showList()">← Volver al índice</button>
             <div id="articleContent"></div>
@@ -615,44 +588,84 @@
     </footer>
 
     <script>
-        let texts = [];
+        let allTexts = [];
         let currentFilter = 'todos';
 
-        // Cargar textos desde archivos Markdown
+        // Cargar textos desde archivos Markdown en la carpeta /textos
         async function loadTexts() {
             try {
-                const response = await fetch('textos.json');
-                if (!response.ok) throw new Error('No se pudo cargar textos.json');
-                texts = await response.json();
+                const response = await fetch('textos/index.json');
+                const textsIndex = await response.json();
+                
+                allTexts = await Promise.all(
+                    textsIndex.map(async (textMeta) => {
+                        const contentResponse = await fetch(`textos/${textMeta.file}`);
+                        const content = await contentResponse.text();
+                        
+                        return {
+                            ...textMeta,
+                            content: parseMarkdown(content)
+                        };
+                    })
+                );
+                
                 renderTexts();
             } catch (error) {
                 console.error('Error cargando textos:', error);
                 document.getElementById('textsGrid').innerHTML = 
-                    '<div class="error">Error cargando los textos. Asegúrate de que existe textos.json</div>';
+                    '<p class="loading">No se pudieron cargar los textos. Verifica que exista textos/index.json</p>';
             }
         }
 
+        // Parsear Markdown a HTML
+        function parseMarkdown(markdown) {
+            let html = markdown;
+            
+            // Encabezados
+            html = html.replace(/^### (.*?)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^## (.*?)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
+            
+            // Párrafos
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = '<p>' + html + '</p>';
+            
+            // Énfasis
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Citas
+            html = html.replace(/^> (.*?)$/gm, '<blockquote>$1</blockquote>');
+            
+            // Links
+            html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
+            
+            return html;
+        }
+
+        // Renderizar textos en el grid
         function renderTexts() {
             const grid = document.getElementById('textsGrid');
+            
             const filtered = currentFilter === 'todos' 
-                ? texts 
-                : texts.filter(t => t.category === currentFilter);
-
+                ? allTexts 
+                : allTexts.filter(t => t.category === currentFilter);
+            
             if (filtered.length === 0) {
-                grid.innerHTML = '<div class="loading">No hay textos en esta categoría</div>';
+                grid.innerHTML = '<p class="loading">No hay textos en esta categoría.</p>';
                 return;
             }
-
+            
             grid.innerHTML = filtered.map(text => `
-                <div class="text-card" onclick="viewText(${text.id})">
+                <div class="text-card" onclick="showArticle(${text.id})">
                     <div class="card-image-container">
-                        <div class="card-image">${text.image || '📝'}</div>
+                        <img src="${text.image || 'https://via.placeholder.com/800x220?text=' + encodeURIComponent(text.title)}" alt="${text.title}" class="card-image">
                     </div>
                     <div class="card-content">
                         <div class="card-meta">
-                            <span class="card-category">${text.category}</span>
-                            <span>·</span>
-                            <span>${text.date}</span>
+                            <span class="card-category">${text.category}</span> · 
+                            <span>${text.date}</span> · 
+                            <span>${text.readTime}</span>
                         </div>
                         <h2 class="card-title">${text.title}</h2>
                         <p class="card-excerpt">${text.excerpt}</p>
@@ -664,6 +677,7 @@
             `).join('');
         }
 
+        // Filtrar textos
         function filterTexts(category) {
             currentFilter = category;
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -673,48 +687,60 @@
             renderTexts();
         }
 
-        function viewText(id) {
-            const text = texts.find(t => t.id === id);
+        // Mostrar artículo
+        function showArticle(id) {
+            const text = allTexts.find(t => t.id === id);
             if (!text) return;
-
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('readingView').classList.add('active');
-
-            const content = `
-                <h1>${text.title}</h1>
-                <div class="article-hero-meta" style="margin-bottom: 3rem;">
-                    <span>${text.category}</span> · 
-                    <span>${text.date}</span> · 
-                    <span>${text.readTime || '5 min'} de lectura</span>
+            
+            const articleHTML = `
+                <div class="article-hero">
+                    <img src="${text.image || 'https://via.placeholder.com/1200x400'}" alt="${text.title}" class="article-hero-image">
+                    <div class="article-hero-overlay">
+                        <h1 class="article-hero-title">${text.title}</h1>
+                        <div class="article-hero-meta">
+                            <span>${text.category}</span> · 
+                            <span>${text.date}</span> · 
+                            <span>${text.readTime} de lectura</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="article-body-container">
-                    <div class="article-body">${text.content}</div>
+                    <div class="article-body">
+                        ${text.content}
+                    </div>
                 </div>
             `;
-
-            document.getElementById('articleContent').innerHTML = content;
+            
+            document.getElementById('articleContent').innerHTML = articleHTML;
+            document.getElementById('listView').classList.remove('active');
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('readingView').classList.add('active');
             window.scrollTo(0, 0);
         }
 
+        // Volver a la lista
         function showList() {
             document.getElementById('listView').style.display = 'block';
+            document.getElementById('listView').classList.add('active');
             document.getElementById('readingView').classList.remove('active');
             window.scrollTo(0, 0);
         }
 
+        // Toggle tema
         function toggleTheme() {
             const html = document.documentElement;
-            const isDark = html.getAttribute('data-theme') === 'dark';
-            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
         }
 
         // Cargar tema guardado
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-
-        // Cargar textos al iniciar
-        loadTexts();
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            loadTexts();
+        });
     </script>
 </body>
 </html>
