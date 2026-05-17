@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "title": "La carreta en el río",
+    "category": "narrativa",
+    "date": "17 de mayo de 2026",
+    "readTime": "7 min",
+    "excerpt": "Un relato sobre el acompañamiento silencioso, la impotencia ante la corriente y el dolor invisible del que observa cómo la vida se lleva lo más precioso.",
+    "image": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80",
+    "file": "01-carreta-rio.md"
+  }
+]
