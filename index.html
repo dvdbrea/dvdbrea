@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>David Brea Rodríguez — Textos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --bg: #f7f3ef;
+            --surface: #ffffff;
+            --text: #1e1a17;
+            --text-secondary: #7c6f64;
+            --accent: #c45c26;
+            --accent-light: #e8a87c;
+            --accent-dark: #8b3a0f;
+            --border: #e0d5cc;
+            --shadow: rgba(30, 26, 23, 0.08);
+            --card-bg: #fff8f3;
+            --gradient-1: #c45c26;
+            --gradient-2: #d4a574;
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1714;
+            --surface: #25201c;
+            --text: #f0ebe6;
+            --text-secondary: #a89b8e;
+            --accent: #e88a5a;
+            --accent-light: #f0b896;
+            --accent-dark: #c45c26;
+            --border: #3d3530;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --card-bg: #2a2520;
+            --gradient-1: #e88a5a;
+            --gradient-2: #c45c26;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .author-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+
+        .author-name span {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero {
+            padding: 4rem 0 3rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-light) 0%, transparent 70%);
+            opacity: 0.15;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            position: relative;
+        }
+
+        .hero h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2));
+            margin: 1.5rem auto;
+            border-radius: 2px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(196, 92, 38, 0.3);
+        }
+
+        .texts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .text-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px var(--shadow);
+            position: relative;
+        }
+
+        .text-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px var(--shadow);
+            border-color: var(--accent-light);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s;
+            background: var(--surface);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .text-card:hover .card-image {
+            transform: scale(1.05);
+        }
+
+        .card-image-container {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-image-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to top, var(--card-bg), transparent);
+        }
+
+        .card-content {
+            padding: 1.5rem 2rem 2rem;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-category {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+            color: var(--text);
+        }
+
+        .card-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .read-more {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: gap 0.3s;
+        }
+
+        .text-card:hover .read-more {
+            gap: 0.8rem;
+        }
+
+        .reading-view {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .reading-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            color: var(--accent);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 2rem 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .back-btn:hover {
+            border-color: var(--accent);
+            transform: translateX(-4px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+
+        .article-hero {
+            position: relative;
+            margin-bottom: 3rem;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px var(--shadow);
+        }
+
+        .article-hero-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .article-hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 3rem 2rem 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+        }
+
+        .article-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .article-hero-meta {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .article-body-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 1rem 4rem;
+        }
+
+        .article-body {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: var(--text);
+        }
+
+        .article-body p {
+            margin-bottom: 1.8rem;
+        }
+
+        .article-body h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 3rem 0 1.2rem;
+            color: var(--text);
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .article-body h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.3rem;
+            bottom: 0.3rem;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--gradient-1), var(--gradient-2));
+            border-radius: 2px;
+        }
+
+        .article-body blockquote {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            margin: 2.5rem 0;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+
+        .article-image {
+            width: 100%;
+            border-radius: 16px;
+            margin: 2.5rem 0;
+            box-shadow: 0 8px 24px var(--shadow);
+            display: block;
+        }
+
+        .article-image-caption {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: -1.5rem;
+            margin-bottom: 2.5rem;
+            font-style: italic;
+        }
+
+        .article-body a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 2px solid var(--accent-light);
+            transition: all 0.3s;
+        }
+
+        .article-body a:hover {
+            border-bottom-color: var(--accent);
+        }
+
+        .article-body ul, .article-body ol {
+            margin: 1.5rem 0 1.5rem 2rem;
+        }
+
+        .article-body li {
+            margin-bottom: 0.8rem;
+        }
+
+        .article-body code {
+            background: var(--card-bg);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .footer-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-copy {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .error {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            border-radius: 0 12px 12px 0;
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .texts-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .article-hero-image {
+                height: 250px;
+            }
+            
+            .article-hero-title {
+                font-size: 1.6rem;
+            }
+            
+            .header-content {
+                padding: 1rem;
+            }
+            
+            main {
+                padding: 0 1rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-light);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="author-name">David Brea <span>Rodríguez</span></div>
+            <div class="controls">
+                <button class="theme-toggle" onclick="toggleTheme()">◐ Modo</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="listView">
+            <section class="hero">
+                <h1>Textos</h1>
+                <p>Ensayos, reflexiones y narrativas. Material en construcción permanente.</p>
+            </section>
+
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterTexts('todos')">Todos</button>
+                <button class="filter-btn" onclick="filterTexts('ensayo')">Ensayos</button>
+                <button class="filter-btn" onclick="filterTexts('narrativa')">Narrativa</button>
+                <button class="filter-btn" onclick="filterTexts('reflexion')">Reflexiones</button>
+            </div>
+
+            <div class="texts-grid" id="textsGrid">
+                <div class="loading">Cargando textos...</div>
+            </div>
+        </div>
+
+        <div class="reading-view" id="readingView">
+            <button class="back-btn" onclick="showList()">← Volver al índice</button>
+            <div id="articleContent"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-name">David Brea Rodríguez</div>
+            <div class="footer-copy">© 2026 — Todos los textos</div>
+        </div>
+    </footer>
+
+    <script>
+        let texts = [];
+        let currentFilter = 'todos';
+
+        // Cargar textos desde archivos Markdown
+        async function loadTexts() {
+            try {
+                const response = await fetch('textos.json');
+                if (!response.ok) throw new Error('No se pudo cargar textos.json');
+                texts = await response.json();
+                renderTexts();
+            } catch (error) {
+                console.error('Error cargando textos:', error);
+                document.getElementById('textsGrid').innerHTML = 
+                    '<div class="error">Error cargando los textos. Asegúrate de que existe textos.json</div>';
+            }
+        }
+
+        function renderTexts() {
+            const grid = document.getElementById('textsGrid');
+            const filtered = currentFilter === 'todos' 
+                ? texts 
+                : texts.filter(t => t.category === currentFilter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="loading">No hay textos en esta categoría</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(text => `
+                <div class="text-card" onclick="viewText(${text.id})">
+                    <div class="card-image-container">
+                        <div class="card-image">${text.image || '📝'}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span class="card-category">${text.category}</span>
+                            <span>·</span>
+                            <span>${text.date}</span>
+                        </div>
+                        <h2 class="card-title">${text.title}</h2>
+                        <p class="card-excerpt">${text.excerpt}</p>
+                        <div class="card-footer">
+                            <span class="read-more">Leer más →</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterTexts(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderTexts();
+        }
+
+        function viewText(id) {
+            const text = texts.find(t => t.id === id);
+            if (!text) return;
+
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('readingView').classList.add('active');
+
+            const content = `
+                <h1>${text.title}</h1>
+                <div class="article-hero-meta" style="margin-bottom: 3rem;">
+                    <span>${text.category}</span> · 
+                    <span>${text.date}</span> · 
+                    <span>${text.readTime || '5 min'} de lectura</span>
+                </div>
+                <div class="article-body-container">
+                    <div class="article-body">${text.content}</div>
+                </div>
+            `;
+
+            document.getElementById('articleContent').innerHTML = content;
+            window.scrollTo(0, 0);
+        }
+
+        function showList() {
+            document.getElementById('listView').style.display = 'block';
+            document.getElementById('readingView').classList.remove('active');
+            window.scrollTo(0, 0);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+
+        // Cargar tema guardado
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Cargar textos al iniciar
+        loadTexts();
+    </script>
+</body>
+</html>
